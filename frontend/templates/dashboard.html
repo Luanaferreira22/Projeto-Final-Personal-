@@ -1,0 +1,161 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard - Personal Manager{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Visão geral do seu negócio{% endblock %}
+
+{% block content %}
+<!-- Cards de estatísticas -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg,#e94560,#c73652);">
+      <p>Total de Alunos</p>
+      <h3>{{ total_alunos }}</h3>
+      <small>ativos</small>
+      <i class="bi bi-people icon"></i>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg,#0f3460,#16213e);">
+      <p>Treinos Criados</p>
+      <h3>{{ total_treinos }}</h3>
+      <small>no sistema</small>
+      <i class="bi bi-clipboard2-pulse icon"></i>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg,#1abc9c,#16a085);">
+      <p>Planos Ativos</p>
+      <h3>{{ total_planos }}</h3>
+      <small>disponíveis</small>
+      <i class="bi bi-card-list icon"></i>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg,#f39c12,#e67e22);">
+      <p>Pagtos Vencidos</p>
+      <h3>{{ pagamentos_pendentes }}</h3>
+      <small>pendentes</small>
+      <i class="bi bi-exclamation-circle icon"></i>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Alunos recentes -->
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-people me-2 text-danger"></i>Alunos Recentes</h6>
+        <a href="{% url 'cadastrar_aluno' %}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg me-1"></i>Novo Aluno
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">Nome</th>
+              <th>Telefone</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for aluno in alunos_recentes %}
+            <tr>
+              <td class="ps-3">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar">{{ aluno.nome|first }}</div>
+                  <div>
+                    <div class="fw-semibold small">{{ aluno.nome }}</div>
+                    <div class="text-muted" style="font-size:11px;">{{ aluno.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="small text-muted">{{ aluno.telefone }}</span></td>
+              <td>
+                <a href="{% url 'detalhe_aluno' aluno.pk %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-4">Nenhum aluno cadastrado ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer bg-white text-end">
+        <a href="{% url 'lista_alunos' %}" class="small text-decoration-none">Ver todos os alunos →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagamentos próximos -->
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-cash-stack me-2 text-warning"></i>Próximos Vencimentos</h6>
+        <a href="{% url 'registrar_pagamento' %}" class="btn btn-sm btn-outline-warning">
+          <i class="bi bi-plus-lg me-1"></i>Registrar
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">Aluno</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pag in pagamentos_proximos %}
+            <tr>
+              <td class="ps-3 small fw-semibold">{{ pag.aluno.nome|truncatechars:18 }}</td>
+              <td><span class="small text-muted">{{ pag.data_vencimento|date:"d/m/Y" }}</span></td>
+              <td><span class="small fw-bold text-success">R$ {{ pag.valor }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-4">Sem vencimentos próximos.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer bg-white text-end">
+        <a href="{% url 'lista_pagamentos' %}" class="small text-decoration-none">Ver todos →</a>
+      </div>
+    </div>
+
+    <!-- Gráfico planos -->
+    <div class="card mt-3">
+      <div class="card-header bg-white py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-pie-chart me-2 text-primary"></i>Alunos por Plano</h6>
+      </div>
+      <div class="card-body">
+        <canvas id="graficoPlanos" height="180"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ctx = document.getElementById('graficoPlanos');
+new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: {{ planos_labels|safe }},
+    datasets: [{
+      data: {{ planos_data|safe }},
+      backgroundColor: ['#e94560','#0f3460','#1abc9c','#f39c12','#9b59b6'],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+    cutout: '65%',
+  }
+});
+</script>
+{% endblock %}

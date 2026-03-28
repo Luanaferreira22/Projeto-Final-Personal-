@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ aluno.nome }}{% endblock %}
+{% block page_title %}{{ aluno.nome }}{% endblock %}
+{% block page_subtitle %}Detalhes do aluno{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Info do aluno -->
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body py-4">
+        <div class="avatar mx-auto mb-3" style="width:64px;height:64px;font-size:1.8rem;">{{ aluno.nome|first }}</div>
+        <h5 class="fw-bold">{{ aluno.nome }}</h5>
+        <p class="text-muted small mb-1">{{ aluno.email }}</p>
+        <p class="text-muted small mb-3">{{ aluno.telefone }}</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="{% url 'editar_aluno' aluno.pk %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-pencil me-1"></i>Editar
+          </a>
+          <a href="{% url 'adicionar_evolucao' aluno.pk %}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Evolução
+          </a>
+        </div>
+      </div>
+      <div class="card-footer bg-white">
+        {% if aluno.objetivo %}
+        <small class="text-muted"><strong>Objetivo:</strong> {{ aluno.objetivo }}</small>
+        {% endif %}
+        {% if aluno.logradouro %}
+        <div class="mt-2"><small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ aluno.logradouro }}, {{ aluno.bairro }} - {{ aluno.cidade }}/{{ aluno.estado }}</small></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <!-- Treinos -->
+    <div class="card mb-3">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-clipboard2-pulse me-2 text-danger"></i>Treinos</h6>
+        <a href="{% url 'criar_treino' %}?aluno={{ aluno.pk }}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg"></i> Novo Treino
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <tbody>
+            {% for treino in treinos %}
+            <tr>
+              <td class="ps-3 fw-semibold small">{{ treino.nome }}</td>
+              <td><small class="text-muted">{{ treino.exercicios.count }} exercício(s)</small></td>
+              <td>
+                <a href="{% url 'detalhe_treino' treino.pk %}" class="btn btn-xs btn-outline-primary" style="padding:2px 8px;font-size:12px;">
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-3 small">Nenhum treino cadastrado.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Evolução física -->
+    <div class="card mb-3">
+      <div class="card-header bg-white py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-graph-up me-2 text-success"></i>Evolução Física</h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">Data</th><th>Peso</th><th>Altura</th><th>IMC</th><th>% Gordura</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in evolucoes %}
+            <tr>
+              <td class="ps-3 small">{{ ev.data|date:"d/m/Y" }}</td>
+              <td><small>{{ ev.peso }} kg</small></td>
+              <td><small>{{ ev.altura }} m</small></td>
+              <td><span class="badge bg-light text-dark">{{ ev.imc }}</span></td>
+              <td><small>{% if ev.percentual_gordura %}{{ ev.percentual_gordura }}%{% else %}-{% endif %}</small></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3 small">Nenhuma evolução registrada.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagamentos -->
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-cash-stack me-2 text-warning"></i>Pagamentos</h6>
+        <a href="{% url 'registrar_pagamento' %}?aluno={{ aluno.pk }}" class="btn btn-sm btn-outline-warning">
+          <i class="bi bi-plus-lg"></i> Registrar
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr><th class="ps-3">Plano</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {% for pag in pagamentos %}
+            <tr>
+              <td class="ps-3 small">{{ pag.plano }}</td>
+              <td><small>{{ pag.data_vencimento|date:"d/m/Y" }}</small></td>
+              <td><small class="fw-bold">R$ {{ pag.valor }}</small></td>
+              <td>
+                {% if pag.pago %}
+                  <span class="badge bg-success badge-status">Pago</span>
+                {% else %}
+                  <span class="badge bg-danger badge-status">Pendente</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3 small">Nenhum pagamento.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

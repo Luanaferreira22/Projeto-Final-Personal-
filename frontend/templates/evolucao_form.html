@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block title %}Registrar Evolução{% endblock %}
+{% block page_title %}Evolução Física{% endblock %}
+{% block page_subtitle %}{{ aluno.nome }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-white py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-graph-up me-2 text-success"></i>Registrar Evolução - {{ aluno.nome }}</h6>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Data *</label>
+              {{ form.data }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small">Peso (kg) *</label>
+              {{ form.peso }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small">Altura (m) *</label>
+              {{ form.altura }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">% Gordura</label>
+              {{ form.percentual_gordura }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Observações</label>
+              {{ form.observacoes }}
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'detalhe_aluno' aluno.pk %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i>Voltar
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-lg me-1"></i>Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
