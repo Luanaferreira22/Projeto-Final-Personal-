@@ -5,12 +5,11 @@ import re
 
 
 class AlunoForm(forms.ModelForm):
-    # Declaração do personal sobre a LGPD
-    declaracao_lgpd = forms.BooleanField(
+    consentimento_lgpd = forms.BooleanField(
         required=True,
-        label='Declaro que informei o aluno sobre o uso dos seus dados pessoais conforme a Política de Privacidade (LGPD — Lei nº 13.709/2018)',
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_declaracao_lgpd'}),
-        error_messages={'required': 'É necessário declarar que o aluno foi informado sobre o uso dos seus dados.'}
+        label='Concordo com o uso dos meus dados pessoais conforme a Política de Privacidade (LGPD — Lei nº 13.709/2018)',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_consentimento_lgpd'}),
+        error_messages={'required': 'É necessário aceitar a Política de Privacidade para cadastrar o aluno.'}
     )
 
     class Meta:
@@ -36,16 +35,15 @@ class AlunoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.instance_pk = kwargs.get('instance').pk if kwargs.get('instance') else None
         super().__init__(*args, **kwargs)
-        self.fields['objetivo'].required   = False
-        self.fields['cep'].required        = False
-        self.fields['logradouro'].required = False
-        self.fields['bairro'].required     = False
-        self.fields['cidade'].required     = False
-        self.fields['estado'].required     = False
-        # Na edição não precisa declarar novamente
+        self.fields['objetivo'].required     = False
+        self.fields['cep'].required          = False
+        self.fields['logradouro'].required   = False
+        self.fields['bairro'].required       = False
+        self.fields['cidade'].required       = False
+        self.fields['estado'].required       = False
         if self.instance_pk:
-            self.fields['declaracao_lgpd'].required = False
-            self.fields['declaracao_lgpd'].initial  = True
+            self.fields['consentimento_lgpd'].required = False
+            self.fields['consentimento_lgpd'].initial  = True
 
     def clean_nome(self):
         nome = self.cleaned_data.get('nome', '').strip()

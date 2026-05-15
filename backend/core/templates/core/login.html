@@ -22,18 +22,39 @@
       padding: 35px; text-align: center; color: #fff;
     }
     .login-header h4 { font-weight: 700; margin-bottom: 5px; }
-    .login-header p { opacity: 0.85; font-size: 14px; margin: 0; }
+    .login-header p  { opacity: 0.85; font-size: 14px; margin: 0; }
     .login-body { padding: 35px; }
-    .form-control { border-radius: 10px; padding: 12px 15px; border: 1.5px solid #e0e0e0; }
-    .form-control:focus { border-color: #e94560; box-shadow: 0 0 0 3px rgba(233,69,96,0.15); }
+    .form-control {
+      border-radius: 10px; padding: 12px 15px;
+      border: 1.5px solid #e0e0e0;
+    }
+    .form-control:focus {
+      border-color: #e94560;
+      box-shadow: 0 0 0 3px rgba(233,69,96,0.15);
+    }
     .btn-login {
       background: linear-gradient(135deg, #e94560, #c73652);
       border: none; border-radius: 10px; padding: 12px;
-      font-weight: 600; letter-spacing: 0.5px; width: 100%; color: #fff;
-      transition: all 0.3s;
+      font-weight: 600; letter-spacing: 0.5px;
+      width: 100%; color: #fff; transition: all 0.3s;
     }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(233,69,96,0.4); color: #fff; }
-    .input-group-text { border-radius: 10px 0 0 10px; background: #f8f9fa; border: 1.5px solid #e0e0e0; }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(233,69,96,0.4);
+      color: #fff;
+    }
+    .input-group-text {
+      border-radius: 10px 0 0 10px;
+      background: #f8f9fa; border: 1.5px solid #e0e0e0;
+    }
+    .termos-box {
+      background: #f8f9fa; border-radius: 10px;
+      padding: 12px 15px; border: 1px solid #e9ecef;
+      font-size: 11px; color: #888; text-align: center;
+      line-height: 1.6;
+    }
+    .termos-box a { color: #e94560; text-decoration: none; font-weight: 600; }
+    .termos-box a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -44,34 +65,46 @@
       <p>Gestão de Treinos para Personal Trainers</p>
     </div>
     <div class="login-body">
+
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-danger rounded-3 py-2 small">{{ message }}</div>
         {% endfor %}
       {% endif %}
+
       <form method="post">
         {% csrf_token %}
         <div class="mb-3">
           <label class="form-label fw-semibold small">Usuário</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-            <input type="text" name="username" class="form-control" placeholder="Digite seu usuário" required autofocus>
+            <input type="text" name="username" class="form-control"
+              placeholder="Digite seu usuário" required autofocus>
           </div>
         </div>
         <div class="mb-4">
           <label class="form-label fw-semibold small">Senha</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
-            <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+            <input type="password" name="password" class="form-control"
+              placeholder="Digite sua senha" required>
           </div>
         </div>
-        <button type="submit" class="btn btn-login">
+
+        <button type="submit" class="btn btn-login mb-3">
           <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
         </button>
+
+        <!-- TERMOS DE USO -->
+        <div class="termos-box">
+          <i class="bi bi-shield-lock me-1"></i>
+          Ao entrar, você concorda com nossa
+          <a href="/politica-privacidade/" target="_blank">Política de Privacidade</a>
+          e com o tratamento dos dados conforme a
+          <strong>LGPD — Lei nº 13.709/2018</strong>.
+        </div>
+
       </form>
-      <p class="text-center text-muted small mt-4 mb-0">
-        <i class="bi bi-shield-lock me-1"></i>Acesso restrito ao personal trainer
-      </p>
     </div>
   </div>
 </body>
