@@ -20,14 +20,18 @@ def cadastrar_aluno(request):
     if request.method == 'POST':
         form = AlunoForm(request.POST)
         if form.is_valid():
+            # commit=False segura o save para associar o usuário antes de gravar
             aluno = form.save(commit=False)
             email = form.cleaned_data['email']
+
+            # garante username único caso dois alunos tenham o mesmo prefixo de email
             username      = email.split('@')[0]
             base_username = username
             counter = 1
             while User.objects.filter(username=username).exists():
                 username = f"{base_username}{counter}"
                 counter += 1
+
             user = User.objects.create_user(
                 username=username, email=email, password='aluno@123',
                 first_name=form.cleaned_data['nome'].split()[0],

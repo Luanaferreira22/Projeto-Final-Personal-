@@ -8,7 +8,7 @@ from .forms import TreinoForm, TreinoExercicioForm, ExercicioForm
 
 @login_required
 def lista_treinos(request):
-    treinos = Treino.objects.filter(ativo=True).select_related('aluno')
+    treinos  = Treino.objects.filter(ativo=True).select_related('aluno')
     aluno_id = request.GET.get('aluno')
     if aluno_id:
         treinos = treinos.filter(aluno_id=aluno_id)
@@ -26,7 +26,7 @@ def criar_treino(request):
             return redirect('detalhe_treino', pk=treino.pk)
     else:
         aluno_id = request.GET.get('aluno')
-        initial = {}
+        initial  = {}
         if aluno_id:
             initial['aluno'] = aluno_id
         form = TreinoForm(initial=initial)
@@ -36,9 +36,9 @@ def criar_treino(request):
 
 @login_required
 def detalhe_treino(request, pk):
-    treino = get_object_or_404(Treino, pk=pk)
+    treino            = get_object_or_404(Treino, pk=pk)
     exercicios_treino = treino.exercicios.all().select_related('exercicio')
-    form = TreinoExercicioForm()
+    form              = TreinoExercicioForm()
     return render(request, 'treinos/detalhe.html', {
         'treino': treino,
         'exercicios_treino': exercicios_treino,
@@ -52,9 +52,10 @@ def adicionar_exercicio_treino(request, pk):
     if request.method == 'POST':
         form = TreinoExercicioForm(request.POST)
         if form.is_valid():
-            te = form.save(commit=False)
+            te        = form.save(commit=False)
             te.treino = treino
-            te.ordem = treino.exercicios.count() + 1
+            # define a ordem com base nos exercícios já existentes no treino
+            te.ordem  = treino.exercicios.count() + 1
             te.save()
             messages.success(request, 'Exercício adicionado ao treino!')
         else:

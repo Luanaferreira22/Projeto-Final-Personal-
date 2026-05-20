@@ -1,7 +1,6 @@
 from django.db import models
 from alunos.models import Aluno
 
-
 class Exercicio(models.Model):
     GRUPO_CHOICES = [
         ('peito', 'Peito'),
@@ -29,7 +28,6 @@ class Exercicio(models.Model):
     def __str__(self):
         return f'{self.nome} ({self.get_grupo_muscular_display()})'
 
-
 class Treino(models.Model):
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='treinos')
     nome = models.CharField(max_length=100)
@@ -45,7 +43,6 @@ class Treino(models.Model):
 
     def __str__(self):
         return f'{self.nome} - {self.aluno.nome}'
-
 
 class TreinoExercicio(models.Model):
     treino = models.ForeignKey(Treino, on_delete=models.CASCADE, related_name='exercicios')

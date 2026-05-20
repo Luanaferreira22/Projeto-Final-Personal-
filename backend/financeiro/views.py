@@ -11,12 +11,14 @@ from .forms import PlanoForm, PagamentoForm
 def lista_pagamentos(request):
     filtro = request.GET.get('filtro', 'todos')
     hoje   = date.today()
+    # select_related evita queries extras ao acessar aluno e plano na listagem
     pagamentos = Pagamento.objects.select_related('aluno', 'plano').order_by('-data_vencimento')
     if filtro == 'pendentes':
         pagamentos = pagamentos.filter(pago=False)
     elif filtro == 'pagos':
         pagamentos = pagamentos.filter(pago=True)
     elif filtro == 'vencidos':
+        # data_vencimento__lt = vencimento anterior a hoje e ainda não pago
         pagamentos = pagamentos.filter(pago=False, data_vencimento__lt=hoje)
     total_recebido = sum(p.valor for p in Pagamento.objects.filter(pago=True))
     total_pendente = sum(p.valor for p in Pagamento.objects.filter(pago=False))
@@ -97,5 +99,6 @@ def editar_plano(request, pk):
 
 @login_required
 def plano_valor(request, pk):
+    # retorna o valor do plano em JSON para o JavaScript preencher o campo automaticamente
     plano = get_object_or_404(Plano, pk=pk)
     return JsonResponse({'valor': str(plano.valor)})

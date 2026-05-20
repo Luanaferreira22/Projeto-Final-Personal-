@@ -1,7 +1,6 @@
 from django.db import models
 from alunos.models import Aluno
 
-
 class Plano(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
@@ -16,7 +15,6 @@ class Plano(models.Model):
 
     def __str__(self):
         return f'{self.nome} - R$ {self.valor}'
-
 
 class Pagamento(models.Model):
     FORMA_CHOICES = [

@@ -50,6 +50,7 @@ class EvolutionFisica(models.Model):
         ordering = ['-data']
 
     def save(self, *args, **kwargs):
+        # calcula o IMC automaticamente antes de salvar, sem depender do formulário
         if self.peso and self.altura and self.altura > 0:
             self.imc = round(float(self.peso) / (float(self.altura) ** 2), 2)
         super().save(*args, **kwargs)

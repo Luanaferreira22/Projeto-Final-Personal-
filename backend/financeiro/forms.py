@@ -55,6 +55,7 @@ class PagamentoForm(forms.ModelForm):
         return data_venc
 
     def clean(self):
+        # se o plano foi selecionado mas o valor não foi preenchido, usa o valor do plano
         cleaned = super().clean()
         plano   = cleaned.get('plano')
         valor   = cleaned.get('valor')

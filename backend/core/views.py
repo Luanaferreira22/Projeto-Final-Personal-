@@ -43,6 +43,7 @@ def politica_privacidade(request):
 def dashboard(request):
     hoje = date.today()
     planos        = Plano.objects.filter(ativo=True)
+    # serializa para JSON para o Chart.js consumir no template
     planos_labels = [p.nome for p in planos]
     planos_data   = [Pagamento.objects.filter(plano=p, pago=False).count() for p in planos]
     return render(request, 'core/dashboard.html', {
@@ -51,7 +52,9 @@ def dashboard(request):
         'total_planos':         Plano.objects.filter(ativo=True).count(),
         'pagamentos_pendentes': Pagamento.objects.filter(data_vencimento__lt=hoje, pago=False).count(),
         'alunos_recentes':      Aluno.objects.filter(ativo=True).order_by('-criado_em')[:5],
-        'pagamentos_proximos':  Pagamento.objects.filter(pago=False, data_vencimento__gte=hoje).select_related('aluno','plano').order_by('data_vencimento')[:5],
+        'pagamentos_proximos':  Pagamento.objects.filter(
+            pago=False, data_vencimento__gte=hoje
+        ).select_related('aluno', 'plano').order_by('data_vencimento')[:5],
         'planos_labels':        json.dumps(planos_labels),
         'planos_data':          json.dumps(planos_data),
     })

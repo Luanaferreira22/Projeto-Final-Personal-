@@ -54,6 +54,7 @@ class ExercicioForm(forms.ModelForm):
         nome = self.cleaned_data.get('nome', '').strip()
         if len(nome) < 3:
             raise ValidationError('O nome do exercício deve ter pelo menos 3 caracteres.')
-        if Exercicio.objects.filter(nome__iexact=nome).exclude(pk=self.instance.pk if self.instance else None).exists():
+        if Exercicio.objects.filter(nome__iexact=nome).exclude(
+                pk=self.instance.pk if self.instance else None).exists():
             raise ValidationError('Já existe um exercício com este nome.')
         return nome

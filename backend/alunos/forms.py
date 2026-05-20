@@ -5,7 +5,6 @@ import re
 
 
 class AlunoForm(forms.ModelForm):
-    # Declaração do personal sobre a LGPD
     declaracao_lgpd = forms.BooleanField(
         required=True,
         label='Declaro que informei o aluno sobre o uso dos seus dados pessoais conforme a Política de Privacidade (LGPD — Lei nº 13.709/2018)',
@@ -34,6 +33,7 @@ class AlunoForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # detecta se é edição (instance com pk) ou cadastro novo
         self.instance_pk = kwargs.get('instance').pk if kwargs.get('instance') else None
         super().__init__(*args, **kwargs)
         self.fields['objetivo'].required   = False
@@ -42,7 +42,7 @@ class AlunoForm(forms.ModelForm):
         self.fields['bairro'].required     = False
         self.fields['cidade'].required     = False
         self.fields['estado'].required     = False
-        # Na edição não precisa declarar novamente
+        # na edição, a declaração LGPD já foi aceita no cadastro original
         if self.instance_pk:
             self.fields['declaracao_lgpd'].required = False
             self.fields['declaracao_lgpd'].initial  = True
@@ -58,6 +58,7 @@ class AlunoForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
         qs = Aluno.objects.filter(email=email)
+        # na edição, exclui o próprio aluno para não gerar falso conflito
         if self.instance_pk:
             qs = qs.exclude(pk=self.instance_pk)
         if qs.exists():
