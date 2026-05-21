@@ -100,3 +100,12 @@ def adicionar_evolucao(request, pk):
     else:
         form = EvolutionFisicaForm()
     return render(request, 'alunos/evolucao_form.html', {'form': form, 'aluno': aluno})
+@login_required
+def excluir_aluno(request, pk):
+    aluno = get_object_or_404(Aluno, pk=pk)
+    if request.method == 'POST':
+        nome = aluno.nome
+        aluno.delete()
+        messages.success(request, f'Todos os dados de {nome} foram excluídos permanentemente conforme solicitado (LGPD).')
+        return redirect('lista_alunos')
+    return render(request, 'alunos/confirmar_exclusao.html', {'aluno': aluno})

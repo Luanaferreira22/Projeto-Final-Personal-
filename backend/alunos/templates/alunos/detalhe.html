@@ -19,6 +19,9 @@
           </a>
           <a href="{% url 'adicionar_evolucao' aluno.pk %}" class="btn btn-sm btn-primary">
             <i class="bi bi-plus-lg me-1"></i>Evolução
+            <a href="{% url 'excluir_aluno' aluno.pk %}" class="btn btn-sm btn-outline-danger">
+    <i class="bi bi-trash me-1"></i>Excluir Dados
+</a>
           </a>
         </div>
       </div>
