@@ -150,7 +150,7 @@ async function buscarCEP() {
     document.getElementById('id_bairro').value     = data.bairro     || '';
     document.getElementById('id_cidade').value     = data.localidade || '';
     document.getElementById('id_estado').value     = data.uf         || '';
-    feedback.textContent = '✓ Endereço preenchido automaticamente!';
+    feedback.textContent = ' Endereço preenchido automaticamente!';
     feedback.className   = 'text-success small';
   } catch (e) {
     feedback.textContent = 'Erro ao buscar CEP.';

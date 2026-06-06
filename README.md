@@ -1,4 +1,4 @@
-# 🏋️ Personal Manager — Gestão de Treinos para Personal Trainer
+#  Personal Manager — Gestão de Treinos para Personal Trainer
 
 **TCC — Sistemas de Informação | UMC — Luana Ferreira — 2026**
 
@@ -6,7 +6,7 @@ Sistema web para personal trainers gerenciarem alunos, treinos e controle financ
 
 ---
 
-## 🚀 Como rodar o projeto
+##  Como rodar o projeto
 
 ### 1. Instalar dependências
 ```bash
@@ -36,7 +36,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🔐 Credenciais padrão
+##  Credenciais padrão
 
 | Campo    | Valor         |
 |----------|---------------|
@@ -45,7 +45,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 📋 Funcionalidades
+##  Funcionalidades
 
 | Módulo         | Funcionalidade                                  |
 |----------------|-------------------------------------------------|
@@ -61,7 +61,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🗄️ Banco de Dados (SQLite)
+##  Banco de Dados (SQLite)
 
 Tabelas principais:
 - `alunos_aluno` — dados dos alunos
@@ -74,7 +74,7 @@ Tabelas principais:
 
 ---
 
-## 🛠️ Tecnologias
+##  Tecnologias
 
 - **Backend:** Python 3 + Django 4.2
 - **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript
@@ -85,18 +85,18 @@ Tabelas principais:
 
 ---
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 gestao_personal/
-├── manage.py
-├── popular_db.py          ← Script de dados iniciais
-├── requirements.txt
-├── gestao_personal/       ← Configurações Django
-│   ├── settings.py
-│   └── urls.py
-├── core/                  ← Login + Dashboard
-├── alunos/                ← Gestão de alunos
-├── treinos/               ← Gestão de treinos
-└── financeiro/            ← Controle financeiro
+ manage.py
+ popular_db.py          ← Script de dados iniciais
+ requirements.txt
+ gestao_personal/       ← Configurações Django
+    settings.py
+    urls.py
+ core/                  ← Login + Dashboard
+ alunos/                ← Gestão de alunos
+ treinos/               ← Gestão de treinos
+ financeiro/            ← Controle financeiro
 ```

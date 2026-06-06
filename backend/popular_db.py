@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from treinos.models import Exercicio
 from financeiro.models import Plano
 
-# ─── Superusuário ───────────────────────────────────────────────────────────
+#  Superusuário 
 if not User.objects.filter(username='personal').exists():
     User.objects.create_superuser(
         username='personal',
@@ -21,11 +21,11 @@ if not User.objects.filter(username='personal').exists():
         first_name='Personal',
         last_name='Trainer'
     )
-    print('✅ Superusuário criado: personal / personal123')
+    print(' Superusuário criado: personal / personal123')
 else:
-    print('ℹ️  Superusuário já existe.')
+    print('ℹ  Superusuário já existe.')
 
-# ─── Planos ──────────────────────────────────────────────────────────────────
+#  Planos 
 planos = [
     {'nome': 'Plano Mensal',    'valor': 150.00, 'duracao': 30,  'descricao': '1 mês de acompanhamento'},
     {'nome': 'Plano Trimestral','valor': 400.00, 'duracao': 90,  'descricao': '3 meses com desconto'},
@@ -35,9 +35,9 @@ planos = [
 for p in planos:
     obj, created = Plano.objects.get_or_create(nome=p['nome'], defaults=p)
     if created:
-        print(f'✅ Plano criado: {obj.nome}')
+        print(f' Plano criado: {obj.nome}')
 
-# ─── Exercícios ──────────────────────────────────────────────────────────────
+#  Exercícios 
 exercicios = [
     # Peito
     ('Supino Reto com Barra',       'peito'),
@@ -91,10 +91,10 @@ for nome, grupo in exercicios:
     _, created = Exercicio.objects.get_or_create(nome=nome, defaults={'grupo_muscular': grupo})
     if created:
         count += 1
-print(f'✅ {count} exercícios criados.')
+print(f' {count} exercícios criados.')
 
-print('\n🎉 Banco de dados populado com sucesso!')
-print('━' * 40)
+print('\n Banco de dados populado com sucesso!')
+print('' * 40)
 print('Login: personal')
 print('Senha: personal123')
 print('URL:   http://127.0.0.1:8000/')
