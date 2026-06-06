@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meu Painel — {{ aluno.nome }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f0f2f7; }
+    .navbar-brand { font-weight: 700; color: #e94560 !important; }
+    .card { border: none; border-radius: 12px; }
+    .aula-card { border-left: 4px solid #e94560; }
+    .aula-card.realizada { border-left-color: #1abc9c; }
+    .aula-card.cancelada { border-left-color: #aaa; opacity: .7; }
+    .badge-agendada  { background: #e94560; }
+    .badge-realizada { background: #1abc9c; }
+    .badge-cancelada { background: #aaa; }
+    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase;
+                     letter-spacing: 1px; color: #0f3460; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-light bg-white shadow-sm mb-4">
+  <div class="container">
+    <span class="navbar-brand"><i class="bi bi-activity me-2"></i>Personal Manager</span>
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-muted small">Olá, <strong>{{ aluno.nome.split.0 }}</strong></span>
+      <a href="{% url 'logout_aluno' %}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-box-arrow-right me-1"></i>Sair
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container pb-5">
+
+  <!-- Boas vindas -->
+  <div class="card shadow-sm mb-4 p-4" style="background: linear-gradient(135deg,#1a1a2e,#0f3460);">
+    <div class="d-flex align-items-center gap-3">
+      <div class="rounded-circle d-flex align-items-center justify-content-center"
+           style="width:56px;height:56px;background:#e94560;font-size:22px;color:white;font-weight:700;">
+        {{ aluno.nome|first }}
+      </div>
+      <div>
+        <h5 class="text-white mb-0 fw-bold">{{ aluno.nome }}</h5>
+        <small class="text-secondary">{{ aluno.email }}</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- PRÓXIMAS AULAS -->
+    <div class="col-md-5">
+      <p class="section-title"><i class="bi bi-calendar-check me-1"></i>Próximas Aulas</p>
+      {% if aulas %}
+        {% for aula in aulas %}
+        <div class="card shadow-sm mb-3 aula-card {% if aula.situacao != 'agendada' %}{{ aula.situacao }}{% endif %}">
+          <div class="card-body py-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="fw-bold mb-1">{{ aula.data|date:"d/m/Y" }}
+                  <small class="text-muted">({{ aula.data|date:"l" }})</small>
+                </p>
+                <p class="text-muted small mb-1">
+                  <i class="bi bi-clock me-1"></i>
+                  {{ aula.hora_inicio|time:"H:i" }} — {{ aula.hora_fim|time:"H:i" }}
+                </p>
+                {% if aula.observacoes %}
+                <p class="text-muted small mb-0">{{ aula.observacoes }}</p>
+                {% endif %}
+              </div>
+              <span class="badge badge-{{ aula.situacao }} text-white">{{ aula.get_situacao_display }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="card shadow-sm p-4 text-center text-muted">
+          <i class="bi bi-calendar-x" style="font-size:2rem;"></i>
+          <p class="mt-2 mb-0 small">Nenhuma aula agendada.</p>
+        </div>
+      {% endif %}
+
+      {% if aulas_passadas %}
+      <p class="section-title mt-4"><i class="bi bi-clock-history me-1"></i>Últimas Aulas</p>
+      {% for aula in aulas_passadas %}
+      <div class="card shadow-sm mb-2 aula-card realizada">
+        <div class="card-body py-2">
+          <p class="small mb-0 fw-semibold">{{ aula.data|date:"d/m/Y" }} —
+            {{ aula.hora_inicio|time:"H:i" }} às {{ aula.hora_fim|time:"H:i" }}</p>
+          <span class="badge badge-{{ aula.situacao }} text-white">{{ aula.get_situacao_display }}</span>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- TREINOS E EVOLUÇÃO -->
+    <div class="col-md-7">
+
+      <!-- TREINOS -->
+      <p class="section-title"><i class="bi bi-lightning-charge me-1"></i>Meus Treinos</p>
+      {% if aluno.treinos.all %}
+        {% for treino in aluno.treinos.all %}
+        <div class="card shadow-sm mb-3">
+          <div class="card-header bg-white py-2">
+            <span class="fw-bold">{{ treino.nome }}</span>
+          </div>
+          <div class="card-body py-2">
+            {% for te in treino.exercicios.all %}
+            <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+              <span class="small fw-semibold">{{ te.exercicio.nome }}</span>
+              <span class="text-muted small">
+                {{ te.series }}x{{ te.repeticoes }}
+                {% if te.carga %} · {{ te.carga }}kg{% endif %}
+              </span>
+            </div>
+            {% empty %}
+            <p class="text-muted small mb-0">Nenhum exercício cadastrado.</p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="card shadow-sm p-4 text-center text-muted mb-4">
+          <i class="bi bi-clipboard-x" style="font-size:2rem;"></i>
+          <p class="mt-2 mb-0 small">Nenhum treino cadastrado ainda.</p>
+        </div>
+      {% endif %}
+
+      <!-- EVOLUÇÃO FÍSICA -->
+      <p class="section-title mt-3"><i class="bi bi-graph-up me-1"></i>Minha Evolução Física</p>
+      {% if aluno.evolucoes.all %}
+        <div class="card shadow-sm">
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Data</th><th>Peso</th><th>Altura</th><th>IMC</th>
+                  {% if aluno.evolucoes.first.percentual_gordura %}<th>% Gordura</th>{% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for ev in aluno.evolucoes.all %}
+                <tr>
+                  <td class="small">{{ ev.data|date:"d/m/Y" }}</td>
+                  <td class="small">{{ ev.peso }} kg</td>
+                  <td class="small">{{ ev.altura }} m</td>
+                  <td class="small fw-bold">
+                    {% if ev.imc %}{{ ev.imc|floatformat:1 }}{% else %}—{% endif %}
+                  </td>
+                  {% if ev.percentual_gordura %}<td class="small">{{ ev.percentual_gordura }}%</td>{% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="card shadow-sm p-4 text-center text-muted">
+          <p class="mb-0 small">Nenhum registro de evolução física ainda.</p>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

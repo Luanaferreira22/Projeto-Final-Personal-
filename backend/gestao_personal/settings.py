@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'alunos',
     'treinos',
     'financeiro',
+    'agenda',
 ]
 
 MIDDLEWARE = [

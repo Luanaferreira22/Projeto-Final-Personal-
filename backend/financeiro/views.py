@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from datetime import date
 from .models import Plano, Pagamento
+from alunos.models import Aluno
 from .forms import PlanoForm, PagamentoForm
 
 
@@ -11,14 +12,12 @@ from .forms import PlanoForm, PagamentoForm
 def lista_pagamentos(request):
     filtro = request.GET.get('filtro', 'todos')
     hoje   = date.today()
-    # select_related evita queries extras ao acessar aluno e plano na listagem
     pagamentos = Pagamento.objects.select_related('aluno', 'plano').order_by('-data_vencimento')
     if filtro == 'pendentes':
-        pagamentos = pagamentos.filter(pago=False)
+        pagamentos = pagamentos.filter(pago=False, data_vencimento__gte=hoje)
     elif filtro == 'pagos':
         pagamentos = pagamentos.filter(pago=True)
     elif filtro == 'vencidos':
-        # data_vencimento__lt = vencimento anterior a hoje e ainda não pago
         pagamentos = pagamentos.filter(pago=False, data_vencimento__lt=hoje)
     total_recebido = sum(p.valor for p in Pagamento.objects.filter(pago=True))
     total_pendente = sum(p.valor for p in Pagamento.objects.filter(pago=False))
@@ -48,6 +47,24 @@ def registrar_pagamento(request):
 
 
 @login_required
+def editar_pagamento(request, pk):
+    pagamento = get_object_or_404(Pagamento, pk=pk)
+    if request.method == 'POST':
+        form = PagamentoForm(request.POST, instance=pagamento)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Pagamento atualizado!')
+            return redirect('lista_pagamentos')
+        else:
+            messages.error(request, 'Corrija os erros abaixo.')
+    else:
+        form = PagamentoForm(instance=pagamento)
+    return render(request, 'financeiro/form_pagamento.html', {
+        'form': form, 'titulo': 'Editar Pagamento', 'pagamento': pagamento
+    })
+
+
+@login_required
 def marcar_pago(request, pk):
     pagamento = get_object_or_404(Pagamento, pk=pk)
     if request.method == 'POST':
@@ -63,7 +80,8 @@ def marcar_pago(request, pk):
 
 @login_required
 def lista_planos(request):
-    return render(request, 'financeiro/planos.html', {'planos': Plano.objects.filter(ativo=True)})
+    planos = Plano.objects.filter(ativo=True)
+    return render(request, 'financeiro/planos.html', {'planos': planos})
 
 
 @login_required
@@ -98,7 +116,38 @@ def editar_plano(request, pk):
 
 
 @login_required
+def plano_aluno(request, aluno_pk):
+    """Troca o plano de um aluno específico"""
+    aluno = get_object_or_404(Aluno, pk=aluno_pk)
+    planos = Plano.objects.filter(ativo=True)
+
+    # Pagamento mais recente do aluno
+    pagamento_atual = Pagamento.objects.filter(
+        aluno=aluno, pago=False
+    ).order_by('-criado_em').first()
+
+    if request.method == 'POST':
+        plano_id = request.POST.get('plano_id')
+        data_vencimento = request.POST.get('data_vencimento')
+        plano = get_object_or_404(Plano, pk=plano_id)
+
+        Pagamento.objects.create(
+            aluno=aluno,
+            plano=plano,
+            valor=plano.valor,
+            data_vencimento=data_vencimento,
+        )
+        messages.success(request, f'Plano de {aluno.nome} atualizado para {plano.nome}!')
+        return redirect('detalhe_aluno', pk=aluno_pk)
+
+    return render(request, 'financeiro/plano_aluno.html', {
+        'aluno': aluno,
+        'planos': planos,
+        'pagamento_atual': pagamento_atual,
+    })
+
+
+@login_required
 def plano_valor(request, pk):
-    # retorna o valor do plano em JSON para o JavaScript preencher o campo automaticamente
     plano = get_object_or_404(Plano, pk=pk)
     return JsonResponse({'valor': str(plano.valor)})

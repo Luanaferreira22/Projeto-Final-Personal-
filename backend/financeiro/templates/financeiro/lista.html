@@ -3,6 +3,27 @@
 {% block page_title %}Controle Financeiro{% endblock %}
 {% block page_subtitle %}Gerenciamento de pagamentos{% endblock %}
 
+{% block extra_css %}
+<style>
+  .stat-card {
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.15);
+  }
+  .stat-card p    { margin: 0; font-size: 13px; opacity: .85; }
+  .stat-card h3   { margin: 6px 0 2px; font-size: 2rem; font-weight: 700; }
+  .stat-card small{ font-size: 11px; opacity: .75; }
+  .stat-card .icon{
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem; opacity: .2;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Resumo financeiro -->
 <div class="row g-3 mb-4">
@@ -29,13 +50,13 @@
   </div>
 </div>
 
-<div class="card">
+<div class="card shadow-sm border-0">
   <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
     <div class="d-flex gap-2">
-      <a href="?filtro=todos" class="btn btn-sm {% if filtro == 'todos' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Todos</a>
+      <a href="?filtro=todos"     class="btn btn-sm {% if filtro == 'todos'     %}btn-primary{% else %}btn-outline-secondary{% endif %}">Todos</a>
       <a href="?filtro=pendentes" class="btn btn-sm {% if filtro == 'pendentes' %}btn-danger{% else %}btn-outline-danger{% endif %}">Pendentes</a>
-      <a href="?filtro=vencidos" class="btn btn-sm {% if filtro == 'vencidos' %}btn-warning{% else %}btn-outline-warning{% endif %}">Vencidos</a>
-      <a href="?filtro=pagos" class="btn btn-sm {% if filtro == 'pagos' %}btn-success{% else %}btn-outline-success{% endif %}">Pagos</a>
+      <a href="?filtro=vencidos"  class="btn btn-sm {% if filtro == 'vencidos'  %}btn-warning{% else %}btn-outline-warning{% endif %}">Vencidos</a>
+      <a href="?filtro=pagos"     class="btn btn-sm {% if filtro == 'pagos'     %}btn-success{% else %}btn-outline-success{% endif %}">Pagos</a>
     </div>
     <a href="{% url 'registrar_pagamento' %}" class="btn btn-primary btn-sm">
       <i class="bi bi-plus-lg me-1"></i>Registrar Pagamento
@@ -58,7 +79,11 @@
         <tr>
           <td class="ps-4">
             <div class="d-flex align-items-center gap-2">
-              <div class="avatar" style="width:28px;height:28px;font-size:12px;">{{ pag.aluno.nome|first }}</div>
+              <div style="width:30px;height:30px;border-radius:50%;background:#e94560;
+                          color:#fff;font-weight:700;font-size:12px;flex-shrink:0;
+                          display:flex;align-items:center;justify-content:center;">
+                {{ pag.aluno.nome|first|upper }}
+              </div>
               <small class="fw-semibold">{{ pag.aluno.nome }}</small>
             </div>
           </td>
@@ -71,19 +96,20 @@
           <td><small class="fw-bold text-success">R$ {{ pag.valor }}</small></td>
           <td>
             {% if pag.pago %}
-              <span class="badge bg-success badge-status">Pago</span>
+              <span class="badge bg-success">Pago</span>
             {% elif pag.data_vencimento < hoje %}
-              <span class="badge bg-danger badge-status">Vencido</span>
+              <span class="badge bg-danger">Vencido</span>
             {% else %}
-              <span class="badge bg-warning text-dark badge-status">Pendente</span>
+              <span class="badge bg-warning text-dark">Pendente</span>
             {% endif %}
           </td>
           <td>
             {% if not pag.pago %}
             <form method="post" action="{% url 'marcar_pago' pag.pk %}" class="d-inline">
               {% csrf_token %}
-              <button type="submit" class="btn btn-xs btn-success" style="padding:3px 10px;font-size:12px;"
-                onclick="return confirm('Confirmar pagamento de {{ pag.aluno.nome }}?')">
+              <button type="submit" class="btn btn-success"
+                      style="padding:3px 10px;font-size:12px;"
+                      onclick="return confirm('Confirmar pagamento de {{ pag.aluno.nome }}?')">
                 <i class="bi bi-check-lg me-1"></i>Pago
               </button>
             </form>

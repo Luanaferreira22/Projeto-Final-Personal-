@@ -1,0 +1,168 @@
+{% extends 'core/base.html' %}
+{% block title %}Agenda{% endblock %}
+{% block page_title %}Agenda de Aulas{% endblock %}
+{% block page_subtitle %}Visualize e gerencie os horários dos seus alunos{% endblock %}
+
+{% block extra_css %}
+<style>
+  .agenda-nav { display: flex; align-items: center; gap: 12px; }
+  .agenda-nav a { color: #1a1a2e; text-decoration: none; font-size: 1.2rem; padding: 4px 10px;
+                  border-radius: 6px; border: 1px solid #dee2e6; background: #fff; }
+  .agenda-nav a:hover { background: #f0f2f7; }
+  .semana-title { font-size: 15px; font-weight: 700; color: #1a1a2e; min-width: 200px; text-align: center; }
+
+  /* Grade da semana */
+  .agenda-grid { display: grid; grid-template-columns: 70px repeat(7, 1fr); gap: 0;
+                 border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden;
+                 background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+
+  /* Cabeçalho dos dias */
+  .dia-header { padding: 10px 6px; text-align: center; border-bottom: 2px solid #dee2e6;
+                border-right: 1px solid #dee2e6; background: #f8f9fa; }
+  .dia-header:last-child { border-right: none; }
+  .dia-header.hoje { background: #e94560; color: #fff; }
+  .dia-nome { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .dia-num  { font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .hora-col { padding: 10px 6px; text-align: center; border-bottom: 2px solid #dee2e6;
+              border-right: 1px solid #dee2e6; background: #f8f9fa;
+              font-size: 10px; font-weight: 700; color: #888; }
+
+  /* Células de hora */
+  .hora-label { font-size: 11px; color: #aaa; text-align: right; padding: 4px 8px 0;
+                border-right: 1px solid #dee2e6; border-bottom: 1px solid #f0f0f0;
+                background: #fafafa; }
+  .hora-cell  { border-right: 1px solid #eee; border-bottom: 1px solid #f0f0f0;
+                min-height: 52px; padding: 3px; position: relative; vertical-align: top; }
+  .hora-cell:last-child { border-right: none; }
+  .hora-cell.hoje-col { background: rgba(233,69,96,.02); }
+
+  /* Cards de aula */
+  .aula-card {
+    border-radius: 6px; padding: 4px 6px; font-size: 11px; margin-bottom: 2px;
+    cursor: pointer; transition: all .15s; border-left: 3px solid transparent;
+  }
+  .aula-card:hover { filter: brightness(.95); transform: scale(1.01); }
+  .aula-card.agendada  { background: #dbeafe; border-left-color: #3b82f6; color: #1e40af; }
+  .aula-card.realizada { background: #d1fae5; border-left-color: #10b981; color: #065f46; }
+  .aula-card.cancelada { background: #f3f4f6; border-left-color: #9ca3af; color: #6b7280;
+                         text-decoration: line-through; opacity: .7; }
+  .aula-card .aula-hora  { font-weight: 700; font-size: 10px; }
+  .aula-card .aula-nome  { font-weight: 600; white-space: nowrap; overflow: hidden;
+                            text-overflow: ellipsis; max-width: 100%; }
+
+  /* Botão nova aula flutuante */
+  .btn-nova-aula {
+    position: fixed; bottom: 28px; right: 28px; width: 52px; height: 52px;
+    border-radius: 50%; background: #e94560; color: #fff; border: none;
+    font-size: 22px; box-shadow: 0 4px 16px rgba(233,69,96,.4);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; transition: all .2s;
+  }
+  .btn-nova-aula:hover { background: #c73652; color: #fff; transform: scale(1.08); }
+
+  /* Legenda */
+  .legenda { display: flex; gap: 16px; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+  .leg-dot  { width: 12px; height: 12px; border-radius: 3px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Navegação da semana -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <div class="agenda-nav">
+    <a href="?semana={{ semana_anterior }}" title="Semana anterior">&#8249;</a>
+    <span class="semana-title">{{ semana_inicio|date:"d/m" }} — {{ semana_fim|date:"d/m/Y" }}</span>
+    <a href="?semana={{ proxima_semana }}" title="Próxima semana">&#8250;</a>
+    <a href="?" class="btn btn-sm btn-outline-secondary ms-1" style="font-size:12px;">Hoje</a>
+  </div>
+
+  <div class="legenda">
+    <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;border-left:3px solid #3b82f6;"></div>Agendada</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d1fae5;border-left:3px solid #10b981;"></div>Realizada</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f3f4f6;border-left:3px solid #9ca3af;"></div>Cancelada</div>
+  </div>
+
+  <!-- Filtro por aluno -->
+  <form method="get" class="d-flex gap-2 align-items-center">
+    <input type="hidden" name="semana" value="{{ semana_inicio|date:'Y-m-d' }}">
+    <select name="aluno" class="form-select form-select-sm" style="width:180px;" onchange="this.form.submit()">
+      <option value="">Todos os alunos</option>
+      {% for a in alunos %}
+        <option value="{{ a.pk }}" {% if aluno_filtro == a.pk|stringformat:"s" %}selected{% endif %}>{{ a.nome }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<!-- Grade da agenda -->
+<div class="agenda-grid">
+
+  <!-- Cabeçalho -->
+  <div class="hora-col">Hora</div>
+  {% for dia in dias_semana %}
+  <div class="dia-header {% if dia.hoje %}hoje{% endif %}">
+    <div class="dia-nome">{{ dia.data|date:"D"|slice:":3" }}</div>
+    <div class="dia-num">{{ dia.data|date:"d" }}</div>
+    {% if dia.total > 0 %}
+      <div class="badge bg-white text-dark" style="font-size:10px;">{{ dia.total }} aula{{ dia.total|pluralize }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <!-- Linhas de hora -->
+  {% for hora in horas %}
+  <div class="hora-label">{{ hora }}h</div>
+  {% for dia in dias_semana %}
+  <div class="hora-cell {% if dia.hoje %}hoje-col{% endif %}">
+    {% for aula in dia.aulas %}
+      {% if aula.hora_inicio|time:"H"|add:"0" == hora|add:"0" %}
+      <div class="aula-card {{ aula.situacao }}" onclick="window.location='{% url 'editar_aula' aula.pk %}'">
+        <div class="aula-hora">{{ aula.hora_inicio|time:"H:i" }}–{{ aula.hora_fim|time:"H:i" }}</div>
+        <div class="aula-nome">{{ aula.aluno.nome }}</div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% endfor %}
+
+</div>
+
+<!-- Resumo do dia -->
+{% if aulas_hoje %}
+<div class="card mt-4 shadow-sm border-0">
+  <div class="card-header bg-white py-2">
+    <span class="fw-bold small"><i class="bi bi-calendar-check me-2 text-danger"></i>Aulas de hoje</span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <thead class="table-light">
+        <tr><th>Aluno</th><th>Horário</th><th>Situacao</th><th>Acoes</th></tr>
+      </thead>
+      <tbody>
+        {% for aula in aulas_hoje %}
+        <tr>
+          <td class="fw-semibold small">{{ aula.aluno.nome }}</td>
+          <td class="small">{{ aula.hora_inicio|time:"H:i" }} — {{ aula.hora_fim|time:"H:i" }}</td>
+          <td>
+            <span class="badge {% if aula.situacao == 'agendada' %}bg-primary{% elif aula.situacao == 'realizada' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ aula.get_situacao_display }}
+            </span>
+          </td>
+          <td>
+            <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-outline-secondary py-0">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Botão flutuante nova aula -->
+<a href="{% url 'agendar_aula' %}" class="btn-nova-aula" title="Agendar nova aula">
+  <i class="bi bi-plus-lg"></i>
+</a>
+{% endblock %}

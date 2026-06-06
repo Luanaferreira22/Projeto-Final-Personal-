@@ -1,0 +1,91 @@
+{% extends 'core/base.html' %}
+{% block title %}Editar Plano do Aluno{% endblock %}
+{% block page_title %}Editar Plano{% endblock %}
+{% block page_subtitle %}{{ aluno.nome }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3">
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-card-list me-2 text-danger"></i>
+          Alterar Plano de {{ aluno.nome }}
+        </h6>
+      </div>
+      <div class="card-body p-4">
+
+        {% if pagamento_atual %}
+        <div class="alert alert-info py-2 small mb-4">
+          <i class="bi bi-info-circle me-1"></i>
+          Plano atual: <strong>{{ pagamento_atual.plano.nome }}</strong>
+          — R$ {{ pagamento_atual.plano.valor }}
+          — Vence em {{ pagamento_atual.data_vencimento|date:"d/m/Y" }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Novo Plano *</label>
+            <select name="plano_id" class="form-select" required id="selectPlano" onchange="atualizarValor()">
+              <option value="">Selecione um plano...</option>
+              {% for plano in planos %}
+              <option value="{{ plano.pk }}" data-valor="{{ plano.valor }}" data-duracao="{{ plano.duracao }}">
+                {{ plano.nome }} — R$ {{ plano.valor }} ({{ plano.duracao }} dias)
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3" id="infoPlano" style="display:none;">
+            <div class="card bg-light border-0 p-3">
+              <p class="small mb-1">Valor: <strong id="valorPlano">-</strong></p>
+              <p class="small mb-0">Duração: <strong id="duracaoPlano">-</strong> dias</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold small">Data de Vencimento *</label>
+            <input type="date" name="data_vencimento" class="form-control" required
+                   min="{{ hoje|date:'Y-m-d' }}" id="dataVencimento">
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'detalhe_aluno' aluno.pk %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i>Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-lg me-1"></i>Salvar Plano
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function atualizarValor() {
+  const sel = document.getElementById('selectPlano');
+  const opt = sel.options[sel.selectedIndex];
+  const info = document.getElementById('infoPlano');
+
+  if (opt.value) {
+    document.getElementById('valorPlano').textContent = 'R$ ' + parseFloat(opt.dataset.valor).toFixed(2);
+    document.getElementById('duracaoPlano').textContent = opt.dataset.duracao;
+    info.style.display = 'block';
+
+    // Calcular data de vencimento automaticamente
+    const hoje = new Date();
+    hoje.setDate(hoje.getDate() + parseInt(opt.dataset.duracao));
+    document.getElementById('dataVencimento').value = hoje.toISOString().split('T')[0];
+  } else {
+    info.style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

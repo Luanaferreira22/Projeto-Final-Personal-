@@ -3,6 +3,27 @@
 {% block page_title %}Dashboard{% endblock %}
 {% block page_subtitle %}Visão geral do seu negócio{% endblock %}
 
+{% block extra_css %}
+<style>
+  .stat-card {
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.15);
+  }
+  .stat-card p    { margin: 0; font-size: 13px; opacity: .85; }
+  .stat-card h3   { margin: 6px 0 2px; font-size: 2rem; font-weight: 700; }
+  .stat-card small{ font-size: 11px; opacity: .75; }
+  .stat-card .icon{
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem; opacity: .2;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Cards de estatísticas -->
 <div class="row g-3 mb-4">
@@ -43,7 +64,7 @@
 <div class="row g-3">
   <!-- Alunos recentes -->
   <div class="col-md-7">
-    <div class="card">
+    <div class="card shadow-sm border-0">
       <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0 fw-bold"><i class="bi bi-people me-2 text-danger"></i>Alunos Recentes</h6>
         <a href="{% url 'cadastrar_aluno' %}" class="btn btn-sm btn-primary">
@@ -64,7 +85,11 @@
             <tr>
               <td class="ps-3">
                 <div class="d-flex align-items-center gap-2">
-                  <div class="avatar">{{ aluno.nome|first }}</div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:#e94560;
+                              color:#fff;font-weight:700;font-size:14px;flex-shrink:0;
+                              display:flex;align-items:center;justify-content:center;">
+                    {{ aluno.nome|first|upper }}
+                  </div>
                   <div>
                     <div class="fw-semibold small">{{ aluno.nome }}</div>
                     <div class="text-muted" style="font-size:11px;">{{ aluno.email }}</div>
@@ -79,7 +104,9 @@
               </td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="text-center text-muted py-4">Nenhum aluno cadastrado ainda.</td></tr>
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">Nenhum aluno cadastrado ainda.</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -90,9 +117,9 @@
     </div>
   </div>
 
-  <!-- Pagamentos próximos -->
+  <!-- Pagamentos próximos + Gráfico -->
   <div class="col-md-5">
-    <div class="card">
+    <div class="card shadow-sm border-0">
       <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0 fw-bold"><i class="bi bi-cash-stack me-2 text-warning"></i>Próximos Vencimentos</h6>
         <a href="{% url 'registrar_pagamento' %}" class="btn btn-sm btn-outline-warning">
@@ -116,7 +143,9 @@
               <td><span class="small fw-bold text-success">R$ {{ pag.valor }}</span></td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="text-center text-muted py-4">Sem vencimentos próximos.</td></tr>
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">Sem vencimentos próximos.</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -127,7 +156,7 @@
     </div>
 
     <!-- Gráfico planos -->
-    <div class="card mt-3">
+    <div class="card mt-3 shadow-sm border-0">
       <div class="card-header bg-white py-3">
         <h6 class="mb-0 fw-bold"><i class="bi bi-pie-chart me-2 text-primary"></i>Alunos por Plano</h6>
       </div>

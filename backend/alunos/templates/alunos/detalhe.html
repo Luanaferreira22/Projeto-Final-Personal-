@@ -5,42 +5,69 @@
 
 {% block content %}
 <div class="row g-3">
-  <!-- Info do aluno -->
+
+  <!-- ── Coluna esquerda: info do aluno ── -->
   <div class="col-md-4">
-    <div class="card text-center">
-      <div class="card-body py-4">
-        <div class="avatar mx-auto mb-3" style="width:64px;height:64px;font-size:1.8rem;">{{ aluno.nome|first }}</div>
-        <h5 class="fw-bold">{{ aluno.nome }}</h5>
+    <div class="card shadow-sm border-0">
+      <div class="card-body py-4 text-center">
+
+        <!-- Avatar redondo com inicial -->
+        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center fw-bold text-white"
+             style="width:72px;height:72px;border-radius:50%;background:#e94560;font-size:2rem;">
+          {{ aluno.nome|first|upper }}
+        </div>
+
+        <h5 class="fw-bold mb-1">{{ aluno.nome }}</h5>
         <p class="text-muted small mb-1">{{ aluno.email }}</p>
         <p class="text-muted small mb-3">{{ aluno.telefone }}</p>
-        <div class="d-flex gap-2 justify-content-center">
+
+        <!-- Botões de ação -->
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
           <a href="{% url 'editar_aluno' aluno.pk %}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-pencil me-1"></i>Editar
           </a>
           <a href="{% url 'adicionar_evolucao' aluno.pk %}" class="btn btn-sm btn-primary">
             <i class="bi bi-plus-lg me-1"></i>Evolução
-            <a href="{% url 'excluir_aluno' aluno.pk %}" class="btn btn-sm btn-outline-danger">
-    <i class="bi bi-trash me-1"></i>Excluir Dados
-</a>
+          </a>
+          <a href="{% url 'agendar_aula' %}?aluno={{ aluno.pk }}" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-calendar-plus me-1"></i>Agendar
           </a>
         </div>
       </div>
-      <div class="card-footer bg-white">
+
+      <div class="card-footer bg-white border-top-0 pt-0 px-3 pb-3">
+        <!-- Botão editar plano -->
+        <a href="{% url 'plano_aluno' aluno.pk %}" class="btn btn-sm btn-outline-warning w-100 mb-2">
+          <i class="bi bi-card-list me-1"></i>Alterar Plano
+        </a>
+
         {% if aluno.objetivo %}
-        <small class="text-muted"><strong>Objetivo:</strong> {{ aluno.objetivo }}</small>
+        <div class="mt-2">
+          <small class="text-muted"><strong>Objetivo:</strong> {{ aluno.objetivo }}</small>
+        </div>
         {% endif %}
+
         {% if aluno.logradouro %}
-        <div class="mt-2"><small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ aluno.logradouro }}, {{ aluno.bairro }} - {{ aluno.cidade }}/{{ aluno.estado }}</small></div>
+        <div class="mt-2">
+          <small class="text-muted">
+            <i class="bi bi-geo-alt me-1"></i>
+            {{ aluno.logradouro }}, {{ aluno.bairro }} — {{ aluno.cidade }}/{{ aluno.estado }}
+          </small>
+        </div>
         {% endif %}
       </div>
     </div>
   </div>
 
+  <!-- ── Coluna direita: treinos, evolução, pagamentos ── -->
   <div class="col-md-8">
-    <!-- Treinos -->
-    <div class="card mb-3">
+
+    <!-- TREINOS -->
+    <div class="card shadow-sm border-0 mb-3">
       <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0 fw-bold"><i class="bi bi-clipboard2-pulse me-2 text-danger"></i>Treinos</h6>
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-lightning-charge me-2 text-danger"></i>Treinos
+        </h6>
         <a href="{% url 'criar_treino' %}?aluno={{ aluno.pk }}" class="btn btn-sm btn-primary">
           <i class="bi bi-plus-lg"></i> Novo Treino
         </a>
@@ -53,29 +80,41 @@
               <td class="ps-3 fw-semibold small">{{ treino.nome }}</td>
               <td><small class="text-muted">{{ treino.exercicios.count }} exercício(s)</small></td>
               <td>
-                <a href="{% url 'detalhe_treino' treino.pk %}" class="btn btn-xs btn-outline-primary" style="padding:2px 8px;font-size:12px;">
+                <a href="{% url 'detalhe_treino' treino.pk %}"
+                   class="btn btn-outline-primary"
+                   style="padding:2px 8px;font-size:12px;">
                   <i class="bi bi-eye"></i> Ver
                 </a>
               </td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="text-center text-muted py-3 small">Nenhum treino cadastrado.</td></tr>
+            <tr>
+              <td colspan="3" class="text-center text-muted py-3 small">
+                Nenhum treino cadastrado.
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Evolução física -->
-    <div class="card mb-3">
+    <!-- EVOLUÇÃO FÍSICA -->
+    <div class="card shadow-sm border-0 mb-3">
       <div class="card-header bg-white py-3">
-        <h6 class="mb-0 fw-bold"><i class="bi bi-graph-up me-2 text-success"></i>Evolução Física</h6>
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-graph-up me-2 text-success"></i>Evolução Física
+        </h6>
       </div>
       <div class="card-body p-0">
         <table class="table table-hover mb-0">
           <thead class="table-light">
             <tr>
-              <th class="ps-3">Data</th><th>Peso</th><th>Altura</th><th>IMC</th><th>% Gordura</th>
+              <th class="ps-3">Data</th>
+              <th>Peso</th>
+              <th>Altura</th>
+              <th>IMC</th>
+              <th>% Gordura</th>
             </tr>
           </thead>
           <tbody>
@@ -85,28 +124,44 @@
               <td><small>{{ ev.peso }} kg</small></td>
               <td><small>{{ ev.altura }} m</small></td>
               <td><span class="badge bg-light text-dark">{{ ev.imc }}</span></td>
-              <td><small>{% if ev.percentual_gordura %}{{ ev.percentual_gordura }}%{% else %}-{% endif %}</small></td>
+              <td>
+                <small>
+                  {% if ev.percentual_gordura %}{{ ev.percentual_gordura }}%{% else %}—{% endif %}
+                </small>
+              </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="text-center text-muted py-3 small">Nenhuma evolução registrada.</td></tr>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-3 small">
+                Nenhuma evolução registrada.
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Pagamentos -->
-    <div class="card">
+    <!-- PAGAMENTOS -->
+    <div class="card shadow-sm border-0 mb-3">
       <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0 fw-bold"><i class="bi bi-cash-stack me-2 text-warning"></i>Pagamentos</h6>
-        <a href="{% url 'registrar_pagamento' %}?aluno={{ aluno.pk }}" class="btn btn-sm btn-outline-warning">
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-cash-stack me-2 text-warning"></i>Pagamentos
+        </h6>
+        <a href="{% url 'registrar_pagamento' %}?aluno={{ aluno.pk }}"
+           class="btn btn-sm btn-outline-warning">
           <i class="bi bi-plus-lg"></i> Registrar
         </a>
       </div>
       <div class="card-body p-0">
         <table class="table table-hover mb-0">
           <thead class="table-light">
-            <tr><th class="ps-3">Plano</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr>
+            <tr>
+              <th class="ps-3">Plano</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Status</th>
+            </tr>
           </thead>
           <tbody>
             {% for pag in pagamentos %}
@@ -116,19 +171,78 @@
               <td><small class="fw-bold">R$ {{ pag.valor }}</small></td>
               <td>
                 {% if pag.pago %}
-                  <span class="badge bg-success badge-status">Pago</span>
+                  <span class="badge bg-success">Pago</span>
                 {% else %}
-                  <span class="badge bg-danger badge-status">Pendente</span>
+                  <span class="badge bg-danger">Pendente</span>
                 {% endif %}
               </td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="text-center text-muted py-3 small">Nenhum pagamento.</td></tr>
+            <tr>
+              <td colspan="4" class="text-center text-muted py-3 small">
+                Nenhum pagamento registrado.
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
+
+    <!-- PRÓXIMAS AULAS -->
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-calendar-week me-2 text-primary"></i>Próximas Aulas
+        </h6>
+        <a href="{% url 'agendar_aula' %}?aluno={{ aluno.pk }}"
+           class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-plus-lg"></i> Agendar
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">Data</th>
+              <th>Horário</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for aula in proximas_aulas %}
+            <tr>
+              <td class="ps-3 small fw-semibold">{{ aula.data|date:"d/m/Y" }}</td>
+              <td><small>{{ aula.hora_inicio|time:"H:i" }} — {{ aula.hora_fim|time:"H:i" }}</small></td>
+              <td>
+                <span class="badge
+                  {% if aula.situacao == 'agendada' %}bg-primary
+                  {% elif aula.situacao == 'realizada' %}bg-success
+                  {% else %}bg-secondary{% endif %}">
+                  {{ aula.get_situacao_display }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'editar_aula' aula.pk %}"
+                   class="btn btn-outline-secondary"
+                   style="padding:2px 8px;font-size:12px;">
+                  Editar
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted py-3 small">
+                Nenhuma aula agendada.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
