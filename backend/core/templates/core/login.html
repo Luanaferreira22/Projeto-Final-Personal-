@@ -3,80 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — Personal Manager</title>
+  <title>Login - Personal Manager</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .login-card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      overflow: hidden;
-      width: 100%;
-      max-width: 440px;
-    }
-    .login-header {
-      background: linear-gradient(135deg, #e94560, #c73652);
-      padding: 30px;
-      text-align: center;
-      color: #fff;
-    }
-    .login-header h4 { font-weight: 700; margin-bottom: 4px; }
-    .login-header p  { opacity: .85; font-size: 13px; margin: 0; }
-    .login-body { padding: 30px; }
-
-    /* Seletor de tipo */
-    .tipo-selector { display: flex; gap: 10px; margin-bottom: 24px; }
-    .tipo-btn {
-      flex: 1; padding: 14px 8px; border: 2px solid #e0e0e0;
-      border-radius: 12px; background: #f8f9fa; cursor: pointer;
-      text-align: center; transition: all .2s; text-decoration: none;
-    }
-    .tipo-btn:hover { border-color: #e94560; background: #fff5f7; }
-    .tipo-btn.active {
-      border-color: #e94560; background: #fff5f7;
-      box-shadow: 0 0 0 3px rgba(233,69,96,.15);
-    }
-    .tipo-btn.teal.active {
-      border-color: #1abc9c; background: #f0fdf9;
-      box-shadow: 0 0 0 3px rgba(26,188,156,.15);
-    }
-    .tipo-btn .icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
-    .tipo-btn .label { font-size: 12px; font-weight: 700; color: #333; }
-    .tipo-btn .sublabel { font-size: 10px; color: #888; }
-
-    .form-control {
-      border-radius: 10px; padding: 11px 15px;
-      border: 1.5px solid #e0e0e0;
-    }
-    .form-control:focus {
-      border-color: #e94560;
-      box-shadow: 0 0 0 3px rgba(233,69,96,.12);
-    }
-    .form-control.teal:focus {
-      border-color: #1abc9c;
-      box-shadow: 0 0 0 3px rgba(26,188,156,.12);
-    }
-    .btn-login {
-      border: none; border-radius: 10px; padding: 12px;
-      font-weight: 600; width: 100%; color: #fff;
-      background: linear-gradient(135deg, #e94560, #c73652);
-      transition: all .3s;
-    }
-    .btn-login.teal {
-      background: linear-gradient(135deg, #1abc9c, #0e9c80);
-    }
-    .btn-login:hover { opacity: .9; color: #fff; transform: translateY(-1px); }
-    .input-group-text { border-radius: 10px 0 0 10px; background: #f8f9fa; border: 1.5px solid #e0e0e0; }
-    .termos { font-size: 10.5px; color: #999; text-align: center; margin-top: 12px; }
-    .termos a { color: #e94560; }
-    .panel { display: none; }
-    .panel.active { display: block; }
+    body { min-height:100vh; background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); display:flex; align-items:center; justify-content:center; }
+    .login-card { background:#fff; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; width:100%; max-width:440px; }
+    .login-header { background:linear-gradient(135deg,#e94560,#c73652); padding:30px; text-align:center; color:#fff; transition:background .3s; }
+    .login-header h4 { font-weight:700; margin-bottom:4px; }
+    .login-header p  { opacity:.85; font-size:13px; margin:0; }
+    .login-body { padding:30px; }
+    .tipo-selector { display:flex; gap:10px; margin-bottom:24px; }
+    .tipo-btn { flex:1; padding:14px 8px; border:2px solid #e0e0e0; border-radius:12px; background:#f8f9fa; cursor:pointer; text-align:center; transition:all .2s; text-decoration:none; }
+    .tipo-btn:hover { border-color:#e94560; background:#fff5f7; }
+    .tipo-btn.active { border-color:#e94560; background:#fff5f7; box-shadow:0 0 0 3px rgba(233,69,96,.15); }
+    .tipo-btn.teal.active { border-color:#1abc9c; background:#f0fdf9; box-shadow:0 0 0 3px rgba(26,188,156,.15); }
+    .tipo-btn .icon { font-size:1.8rem; display:block; margin-bottom:6px; }
+    .tipo-btn .label { font-size:12px; font-weight:700; color:#333; }
+    .tipo-btn .sublabel { font-size:10px; color:#888; }
+    .form-control { border-radius:10px; padding:11px 15px; border:1.5px solid #e0e0e0; }
+    .form-control:focus { border-color:#e94560; box-shadow:0 0 0 3px rgba(233,69,96,.12); }
+    .form-control.teal:focus { border-color:#1abc9c; box-shadow:0 0 0 3px rgba(26,188,156,.12); }
+    .btn-login { border:none; border-radius:10px; padding:12px; font-weight:600; width:100%; color:#fff; background:linear-gradient(135deg,#e94560,#c73652); transition:all .3s; }
+    .btn-login.teal { background:linear-gradient(135deg,#1abc9c,#0e9c80); }
+    .btn-login:hover { opacity:.9; color:#fff; transform:translateY(-1px); }
+    .input-group-text { border-radius:10px 0 0 10px; background:#f8f9fa; border:1.5px solid #e0e0e0; }
+    .termos { font-size:10.5px; color:#999; text-align:center; margin-top:12px; }
+    .termos a { color:#e94560; }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .lgpd-box { background:#f0fdf9; border:1px solid #1abc9c; border-radius:10px; padding:12px 14px; font-size:11px; color:#444; margin-bottom:12px; }
+    .lgpd-box a { color:#0e8f74; font-weight:600; }
   </style>
 </head>
 <body>
@@ -84,9 +41,8 @@
   <div class="login-header" id="loginHeader">
     <i class="bi bi-activity" style="font-size:2.5rem;"></i>
     <h4 class="mt-2">Personal Manager</h4>
-    <p>Gestão de Treinos para Personal Trainer</p>
+    <p>Gestao de Treinos para Personal Trainer</p>
   </div>
-
   <div class="login-body">
 
     {% if messages %}
@@ -109,25 +65,23 @@
       </div>
     </div>
 
-    <!-- Formulário Personal -->
+    <!-- Formulario Personal -->
     <div class="panel active" id="panelPersonal">
       <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         <input type="hidden" name="tipo" value="personal">
         <div class="mb-3">
-          <label class="form-label fw-semibold small">Usuário</label>
+          <label class="form-label fw-semibold small">Usuario</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-            <input type="text" name="username" class="form-control"
-                   placeholder="Digite seu usuário" required autofocus>
+            <input type="text" name="username" class="form-control" placeholder="Digite seu usuario" required autofocus>
           </div>
         </div>
         <div class="mb-4">
           <label class="form-label fw-semibold small">Senha</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
-            <input type="password" name="password" class="form-control"
-                   placeholder="Digite sua senha" required>
+            <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required>
           </div>
         </div>
         <button type="submit" class="btn btn-login">
@@ -135,13 +89,13 @@
         </button>
       </form>
       <p class="termos mt-3">
-        Ao entrar, você concorda com nossa
-        <a href="{% url 'politica_privacidade' %}">Política de Privacidade</a>
-        conforme a LGPD — Lei nº 13.709/2018.
+        Ao entrar, voce concorda com nossa
+        <a href="{% url 'politica_privacidade' %}">Politica de Privacidade</a>
+        conforme a LGPD - Lei n. 13.709/2018.
       </p>
     </div>
 
-    <!-- Formulário Aluno -->
+    <!-- Formulario Aluno -->
     <div class="panel" id="panelAluno">
       <form method="post" action="{% url 'login_aluno' %}">
         {% csrf_token %}
@@ -149,31 +103,43 @@
           <label class="form-label fw-semibold small">E-mail</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
-            <input type="email" name="email" class="form-control teal"
-                   placeholder="seu@email.com" required>
+            <input type="email" name="email" class="form-control teal" placeholder="seu@email.com" required>
           </div>
         </div>
-        <div class="mb-4">
+        <div class="mb-3">
           <label class="form-label fw-semibold small">Senha</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
-            <input type="password" name="password" class="form-control teal"
-                   placeholder="Sua senha" required>
+            <input type="password" name="password" class="form-control teal" placeholder="Sua senha" required>
           </div>
         </div>
+
+        <!-- LGPD -->
+        <div class="lgpd-box">
+          <i class="bi bi-shield-check text-success me-1"></i>
+          <strong>Privacidade e LGPD:</strong> Seus dados pessoais sao armazenados conforme a
+          <strong>Lei Geral de Protecao de Dados - Lei n. 13.709/2018</strong>.
+          Consulte nossa <a href="{% url 'politica_privacidade' %}">Politica de Privacidade</a>.
+        </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="aceitaLgpd" name="aceita_lgpd" required>
+          <label class="form-check-label small text-muted" for="aceitaLgpd">
+            Estou ciente sobre o uso dos meus dados conforme a LGPD.
+          </label>
+        </div>
+
         <button type="submit" class="btn btn-login teal">
           <i class="bi bi-box-arrow-in-right me-2"></i>Entrar como Aluno
         </button>
         <p class="termos mt-3">
           Sua senha foi criada pelo seu personal trainer.<br>
-          Em caso de dúvidas, entre em contato com ele.
+          Em caso de duvidas, entre em contato com ele.
         </p>
       </form>
     </div>
 
   </div>
 </div>
-
 <script>
 function selectTipo(tipo) {
   const header = document.getElementById('loginHeader');
@@ -181,7 +147,6 @@ function selectTipo(tipo) {
   const btnAluno = document.getElementById('btnAluno');
   const panelPersonal = document.getElementById('panelPersonal');
   const panelAluno = document.getElementById('panelAluno');
-
   if (tipo === 'personal') {
     btnPersonal.classList.add('active');
     btnAluno.classList.remove('active');
