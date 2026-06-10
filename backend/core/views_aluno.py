@@ -45,12 +45,12 @@ def login_aluno(request):
 
 def logout_aluno(request):
     logout(request)
-    return redirect('login_aluno')
+    return redirect('login')
 
 
 def painel_aluno(request):
     if not request.user.is_authenticated:
-        return redirect('login_aluno')
+        return redirect('login')
 
     if request.user.is_staff:
         return redirect('dashboard')
@@ -59,7 +59,7 @@ def painel_aluno(request):
         aluno = Aluno.objects.get(usuario=request.user, ativo=True)
     except Aluno.DoesNotExist:
         logout(request)
-        return redirect('login_aluno')
+        return redirect('login')
 
     from datetime import date
     from agenda.models import Aula
@@ -78,7 +78,7 @@ def painel_aluno(request):
 def alterar_senha_aluno(request):
     """Permite o aluno trocar a própria senha"""
     if not request.user.is_authenticated:
-        return redirect('login_aluno')
+        return redirect('login')
 
     if request.user.is_staff:
         return redirect('dashboard')
