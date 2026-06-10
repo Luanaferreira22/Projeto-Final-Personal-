@@ -5,9 +5,11 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-6">
-    <div class="card">
+    <div class="card shadow-sm border-0">
       <div class="card-header bg-white py-3">
-        <h6 class="mb-0 fw-bold"><i class="bi bi-cash me-2 text-warning"></i>{{ titulo }}</h6>
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-cash me-2 text-warning"></i>{{ titulo }}
+        </h6>
       </div>
       <div class="card-body p-4">
         <form method="post">
@@ -19,7 +21,7 @@
           <div class="mb-3">
             <label class="form-label fw-semibold small">Plano *</label>
             {{ form.plano }}
-            <small class="text-muted">O valor será preenchido automaticamente.</small>
+            <small class="text-muted">O valor sera preenchido automaticamente.</small>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold small">Valor (R$)</label>
@@ -35,10 +37,10 @@
           </div>
           <div class="mb-3 form-check">
             {{ form.pago }}
-            <label class="form-check-label fw-semibold small">Já está pago</label>
+            <label class="form-check-label fw-semibold small">Ja esta pago</label>
           </div>
           <div class="mb-4">
-            <label class="form-label fw-semibold small">Observações</label>
+            <label class="form-label fw-semibold small">Observacoes</label>
             {{ form.observacoes }}
           </div>
           <div class="d-flex justify-content-between">
@@ -58,17 +60,17 @@
 
 {% block extra_js %}
 <script>
-// Preencher valor automaticamente ao selecionar plano
 document.getElementById('id_plano').addEventListener('change', function() {
-  // Mapa de planos e valores (preenchido via dados do servidor)
-  // Para funcionalidade completa, usar fetch API
   const planoId = this.value;
   if (planoId) {
-    fetch(`/financeiro/plano-valor/${planoId}/`)
+    // URL correta: /financeiro/planos/valor/{id}/
+    fetch(`/financeiro/planos/valor/${planoId}/`)
       .then(r => r.json())
       .then(data => {
         document.getElementById('id_valor').value = data.valor || '';
       }).catch(() => {});
+  } else {
+    document.getElementById('id_valor').value = '';
   }
 });
 </script>
