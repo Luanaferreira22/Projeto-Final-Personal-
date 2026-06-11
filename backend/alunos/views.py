@@ -5,12 +5,20 @@ from django.contrib import messages
 from .models import Aluno, EvolutionFisica
 from .forms import AlunoForm, EvolutionFisicaForm
 import re
+import secrets
+import string
+
+
+def _gerar_senha_temporaria():
+    """Gera uma senha temporária segura de 10 caracteres"""
+    caracteres = string.ascii_letters + string.digits + "!@#$"
+    return ''.join(secrets.choice(caracteres) for _ in range(10))
 
 
 def _criar_usuario_aluno(nome, email):
     """
-    Cria o usuário Django para o aluno usando o email como base do username.
-    A senha padrão é o email do aluno (ele deve trocar no primeiro acesso).
+    Cria o usuário Django para o aluno.
+    Senha temporária gerada aleatoriamente — não é mais o email.
     """
     base = email.split('@')[0]
     base = re.sub(r'[^a-zA-Z0-9_]', '', base)
@@ -20,15 +28,17 @@ def _criar_usuario_aluno(nome, email):
         username = f"{base}{counter}"
         counter += 1
 
+    senha_temp = _gerar_senha_temporaria()
+
     user = User.objects.create_user(
         username=username,
         email=email,
-        password=email,          # senha inicial = email do aluno
+        password=senha_temp,
         first_name=nome.split()[0],
-        is_staff=False,          # NUNCA pode ser staff
+        is_staff=False,
         is_superuser=False,
     )
-    return user
+    return user, senha_temp
 
 
 @login_required
@@ -45,19 +55,19 @@ def cadastrar_aluno(request):
     if request.method == 'POST':
         form = AlunoForm(request.POST)
         if form.is_valid():
-            aluno       = form.save(commit=False)
-            email       = form.cleaned_data['email']
-            nome        = form.cleaned_data['nome']
+            aluno = form.save(commit=False)
+            email = form.cleaned_data['email']
+            nome  = form.cleaned_data['nome']
 
-            # Criar usuário automaticamente com email como senha inicial
-            user        = _criar_usuario_aluno(nome, email)
+            user, senha_temp = _criar_usuario_aluno(nome, email)
             aluno.usuario = user
             aluno.save()
 
             messages.success(
                 request,
                 f'Aluno {aluno.nome} cadastrado! '
-                f'Login: {email} | Senha inicial: {email}'
+                f'Login: {email} | Senha temporaria: {senha_temp} '
+                f'(oriente o aluno a trocar no primeiro acesso)'
             )
             return redirect('lista_alunos')
         else:
@@ -74,7 +84,6 @@ def editar_aluno(request, pk):
         form = AlunoForm(request.POST, instance=aluno)
         if form.is_valid():
             form.save()
-            # Atualiza email do usuário Django também
             if aluno.usuario:
                 aluno.usuario.email = form.cleaned_data['email']
                 aluno.usuario.save()
@@ -123,7 +132,7 @@ def adicionar_evolucao(request, pk):
             ev       = form.save(commit=False)
             ev.aluno = aluno
             ev.save()
-            messages.success(request, 'Evolução física registrada!')
+            messages.success(request, 'Evolucao fisica registrada!')
             return redirect('detalhe_aluno', pk=pk)
     else:
         form = EvolutionFisicaForm()

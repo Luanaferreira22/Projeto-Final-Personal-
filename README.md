@@ -2,90 +2,160 @@
 
 **TCC — Sistemas de Informacao | UMC — Luana Ferreira — 2026**
 
+> Sistema desenvolvido com foco no **personal trainer autonomo**.
+
 Sistema web para personal trainers gerenciarem alunos, treinos, agenda e controle financeiro.
 
 ---
 
-## Como rodar o projeto
+## AVISO IMPORTANTE — Ambiente de Execucao
 
-### 1. Instalar dependencias
+**Este sistema foi desenvolvido para execucao em ambiente LOCAL (desenvolvimento), sem deploy em producao.**
+
+- O servidor utilizado e o servidor de desenvolvimento do Django (`runserver`)
+- O banco de dados SQLite e adequado para prototipos e uso local de pequeno porte
+- Para um eventual ambiente de producao, seria necessario: migrar para PostgreSQL, configurar servidor WSGI (Gunicorn/uWSGI), habilitar HTTPS e ajustar `DEBUG=False`
+- Essas evolucoes estao documentadas como **trabalhos futuros** na monografia
+
+---
+
+## Pre-requisitos
+
+| Requisito | Versao |
+|-----------|--------|
+| Python    | 3.11 ou superior |
+| pip       | incluso no Python |
+| Navegador | Chrome, Edge ou Firefox atualizados |
+
+Para verificar se o Python esta instalado:
+
+```bash
+python --version
+```
+
+---
+
+## Como executar o projeto (passo a passo)
+
+### 1. Clonar ou baixar o repositorio
+
+```bash
+git clone https://github.com/Luanaferreira22/Projeto-Final-Personal-.git
+cd Projeto-Final-Personal-
+```
+
+Ou baixe o ZIP pelo GitHub (Code > Download ZIP) e extraia.
+
+### 2. Instalar as dependencias
 
 ```bash
 pip install django==4.2.7 Pillow==10.1.0
 ```
 
-### 2. Configurar variaveis de ambiente
-
-Copie o arquivo de exemplo e preencha com suas credenciais:
-
-```bash
-cp .env.example .env
-```
-
-### 3. Aplicar as migracoes
+### 3. Entrar na pasta backend
 
 ```bash
 cd backend
+```
+
+### 4. Aplicar as migracoes (cria as tabelas do banco)
+
+```bash
 python manage.py migrate
 ```
 
-### 4. Criar o superusuario (personal trainer)
+### 5. Criar o usuario do personal trainer
 
 ```bash
-python create_superuser.py
+python manage.py createsuperuser
 ```
 
-### 5. Iniciar o servidor
+Preencha usuario, email e senha quando solicitado.
+
+### 6. Iniciar o servidor de desenvolvimento
 
 ```bash
 python manage.py runserver
 ```
 
-### 6. Acessar no navegador
+### 7. Acessar no navegador
 
 ```
 http://127.0.0.1:8000/
+```
+
+Para encerrar o servidor: `CTRL+C` no terminal.
+
+---
+
+## Como rodar os testes unitarios
+
+```bash
+cd backend
+python manage.py test
+```
+
+Para verificar a cobertura de testes:
+
+```bash
+pip install coverage
+coverage run manage.py test
+coverage report
 ```
 
 ---
 
 ## Acessos do sistema
 
-| Tipo            | URL                              |
-|-----------------|----------------------------------|
-| Personal Trainer| http://127.0.0.1:8000/login/     |
-| Aluno           | http://127.0.0.1:8000/aluno/login/ |
-| Agenda          | http://127.0.0.1:8000/agenda/    |
+| Tipo             | URL                                |
+|------------------|------------------------------------|
+| Personal Trainer | http://127.0.0.1:8000/login/       |
+| Aluno            | http://127.0.0.1:8000/aluno/login/ |
+| Agenda           | http://127.0.0.1:8000/agenda/      |
 
-> As credenciais de acesso sao configuradas no arquivo `.env` que nao e versionado por seguranca.
+**Fluxo de acesso do aluno:** ao ser cadastrado pelo personal, o sistema gera
+uma **senha temporaria aleatoria** exibida na tela. O personal repassa ao aluno,
+que deve troca-la no primeiro acesso pela opcao "Alterar Senha" no painel.
 
 ---
 
 ## Funcionalidades
 
-| Modulo              | Funcionalidade                                          |
-|---------------------|---------------------------------------------------------|
-| **Login**           | Autenticacao segura com Django Auth (PBKDF2-SHA256)     |
-| **Login do Aluno**  | Acesso exclusivo do aluno com email e senha             |
-| **Dashboard**       | Visao geral com graficos interativos (Chart.js)         |
-| **Alunos**          | Cadastro, edicao, busca e inativacao de alunos          |
-| **Endereco**        | Preenchimento automatico via API ViaCEP                 |
-| **Treinos**         | Criacao de treinos personalizados por aluno             |
-| **Exercicios**      | Banco com 34 exercicios pre-cadastrados por grupo muscular |
-| **Evolucao Fisica** | Registro de peso, altura, IMC e percentual de gordura   |
-| **Agenda**          | Calendario semanal com agendamento de aulas             |
-| **Painel do Aluno** | Aluno visualiza treinos, agenda e evolucao fisica       |
-| **Pagamentos**      | Registro, filtros e controle de pagamentos              |
-| **Planos**          | Cadastro e edicao de planos com valor e duracao         |
-| **Alterar Plano**   | Troca de plano do aluno com calculo automatico          |
-| **LGPD**            | Aceite de termos registrado no banco com data e hora    |
-| **Seguranca**       | CSRF, @login_required e protecao de credenciais         |
+| Modulo          | Funcionalidade                                             |
+|-----------------|------------------------------------------------------------|
+| Login           | Autenticacao segura com Django Auth (PBKDF2-SHA256)        |
+| Login do Aluno  | Acesso exclusivo do aluno com email e senha temporaria     |
+| Troca de Senha  | Aluno altera a propria senha apos o primeiro acesso        |
+| Dashboard       | Visao geral com graficos interativos (Chart.js)            |
+| Alunos          | Cadastro, edicao, busca e inativacao de alunos             |
+| Endereco        | Preenchimento automatico via API ViaCEP                    |
+| Treinos         | Criacao de treinos personalizados por aluno                |
+| Exercicios      | Banco com 34 exercicios pre-cadastrados por grupo muscular |
+| Evolucao Fisica | Registro de peso, altura, IMC e percentual de gordura      |
+| Agenda          | Calendario semanal com agendamento de aulas                |
+| Painel do Aluno | Aluno visualiza treinos, agenda e evolucao fisica          |
+| Pagamentos      | Registro, filtros e controle de pagamentos                 |
+| Planos          | Cadastro e edicao de planos com valor e duracao            |
+| Alterar Plano   | Troca de plano do aluno com calculo automatico             |
+| LGPD            | Aceite de termos registrado no banco com data e hora       |
+| Testes          | Suite de testes unitarios com Django TestCase              |
+
+---
+
+## Seguranca implementada
+
+- Senhas criptografadas com **PBKDF2-SHA256** (padrao Django)
+- Senha inicial do aluno **gerada aleatoriamente** (10 caracteres)
+- Protecao **CSRF** em todos os formularios
+- **@login_required** em todas as rotas autenticadas
+- Rotas administrativas **bloqueadas para alunos** (verificacao is_staff)
+- **X_FRAME_OPTIONS = DENY** contra clickjacking
+- Sessao com expiracao automatica em 24 horas
+- Credenciais e SECRET_KEY em variaveis de ambiente (.env)
 
 ---
 
 ## Banco de Dados (SQLite 3)
-
-Tabelas principais:
 
 - `auth_user` — usuarios do sistema
 - `alunos_aluno` — dados dos alunos (inclui aceite_lgpd e data_aceite_lgpd)
@@ -97,35 +167,20 @@ Tabelas principais:
 - `financeiro_pagamento` — controle de pagamentos
 - `agenda_aula` — agendamento de aulas
 
+Para visualizar o banco recomenda-se o **DB Browser for SQLite**
+(abrir `backend/db.sqlite3` em modo somente leitura).
+
 ---
 
 ## Tecnologias
 
-- **Backend:** Python 3.11 + Django 4.2
-- **Frontend:** HTML5, CSS3, Bootstrap 5.3, JavaScript
-- **Banco de Dados:** SQLite 3
-- **Graficos:** Chart.js
-- **API externa:** ViaCEP (preenchimento automatico de endereco)
-- **Icones:** Bootstrap Icons 1.11
-- **Seguranca:** PBKDF2-SHA256, CSRF, LGPD
-
----
-
-## Estrutura do Projeto
-
-```
-gestao_personal/
-    backend/
-        gestao_personal/    <- configuracoes Django
-        alunos/             <- modulo de alunos
-        treinos/            <- modulo de treinos
-        financeiro/         <- modulo financeiro
-        agenda/             <- modulo de agenda
-        core/               <- login, dashboard, painel do aluno
-        db.sqlite3          <- banco de dados
-        manage.py
-    
-```
+- Backend: Python 3.11 + Django 4.2 (padrao MTV)
+- Frontend: HTML5, CSS3, Bootstrap 5.3, JavaScript
+- Banco de Dados: SQLite 3
+- Graficos: Chart.js
+- API externa: ViaCEP
+- Icones: Bootstrap Icons 1.11
+- Testes: Django TestCase
 
 ---
 
@@ -135,6 +190,15 @@ O sistema implementa conformidade com a Lei n. 13.709/2018:
 
 - Termos de uso exibidos no login do personal trainer
 - Checkbox de aceite obrigatorio no login do aluno
-- Data e hora do aceite registrados na tabela `alunos_aluno`
+- Data e hora do aceite registrados na tabela alunos_aluno
 - Declaracao de responsabilidade no cadastro de alunos
-- Pagina de Politica de Privacidade disponivel em `/politica-privacidade/`
+- Pagina de Politica de Privacidade disponivel em /politica-privacidade/
+
+---
+
+## Trabalhos Futuros
+
+- Troca de senha do personal trainer pelo proprio sistema
+- Deploy em ambiente de producao (PostgreSQL + Gunicorn + HTTPS)
+- Paginacao nas listagens
+- Ampliacao da cobertura de testes automatizados

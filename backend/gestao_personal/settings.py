@@ -1,13 +1,29 @@
-from pathlib import Path
+"""
+Personal Manager — Settings
+Luana Ferreira | PFC Sistemas de Informação | UMC 2026
+"""
 import os
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-sistemas-informacao-2026-umc-luana-ferreira'
+# Carrega .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
+except ImportError:
+    env_file = BASE_DIR / '.env'
+    if env_file.exists():
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ.setdefault(key.strip(), value.strip())
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-apenas-para-dev')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.BloqueioAlunoMiddleware',
 ]
 
 ROOT_URLCONF = 'gestao_personal.urls'
@@ -67,20 +84,27 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+LOGIN_URL           = '/login/'
+LOGIN_REDIRECT_URL  = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
 LANGUAGE_CODE = 'pt-br'
-TIME_ZONE = 'America/Sao_Paulo'
-USE_I18N = True
-USE_TZ = True
+TIME_ZONE     = 'America/Sao_Paulo'
+USE_I18N      = True
+USE_TZ        = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/media/'
+MEDIA_URL  = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
+# Segurança — proteção contra clickjacking
+X_FRAME_OPTIONS = 'DENY'
+
+# Sessão expira ao fechar o navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 86400  # 24 horas
