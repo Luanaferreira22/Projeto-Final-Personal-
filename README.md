@@ -10,12 +10,12 @@ Sistema web para personal trainers gerenciarem alunos, treinos, agenda e control
 
 ## AVISO IMPORTANTE — Ambiente de Execucao
 
-**Este sistema foi desenvolvido para execucao em ambiente LOCAL (desenvolvimento), sem deploy em producao.**
+**Este sistema foi desenvolvido com foco no personal trainer autonomo,
+para execucao em ambiente LOCAL (desenvolvimento), sem deploy em producao.**
 
 - O servidor utilizado e o servidor de desenvolvimento do Django (`runserver`)
-- O banco de dados SQLite e adequado para prototipos e uso local de pequeno porte
-- Para um eventual ambiente de producao, seria necessario: migrar para PostgreSQL, configurar servidor WSGI (Gunicorn/uWSGI), habilitar HTTPS e ajustar `DEBUG=False`
-- Essas evolucoes estao documentadas como **trabalhos futuros** na monografia
+- O banco SQLite e adequado para o porte do sistema e uso local
+- A evolucao para ambiente de producao esta documentada como trabalho futuro na monografia
 
 ---
 
